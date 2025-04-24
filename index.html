@@ -14,6 +14,39 @@
       --accent-light: rgba(252, 215, 53, 0.7);
     }
 
+    /* Make default cursor invisible on all elements */
+* {
+  cursor: none !important; 
+}
+
+/* Custom cursor container */
+#custom-cursor {
+  position: fixed;
+  width: 40px; /* Adjust based on your image size */
+  height: 50px; /* Adjust based on your image size */
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: transform 0.05s ease;
+}
+
+/* Image-based cursor */
+.cursor-image {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 8px rgba(252, 215, 53, 0.7));
+}
+
+/* Particle style */
+.particle {
+  position: absolute;
+  background: radial-gradient(circle at center, rgb(252, 215, 53) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0.7;
+  z-index: 9998;
+}
+
 
     /* Reset styles */
 * {
@@ -930,7 +963,7 @@ html, body {
     }
 
 
-    /* Modern Page Transition Animation */
+ /* Modern Page Transition Animation */
 .page-transition {
   position: fixed;
   top: 0;
@@ -939,31 +972,24 @@ html, body {
   height: 100%;
   z-index: 9999;
   pointer-events: none;
-  display: flex;
   overflow: hidden;
 }
 
-
+/* Single panel approach instead of multiple panels */
 .transition-panel {
-  flex: 1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background-color: var(--accent);
   transform: translateY(100%);
   will-change: transform;
 }
 
-
-/* Create 5 panels for a staggered effect */
-.transition-panel:nth-child(1) { transition-delay: 0s; }
-.transition-panel:nth-child(2) { transition-delay: 0.05s; }
-.transition-panel:nth-child(3) { transition-delay: 0.1s; }
-.transition-panel:nth-child(4) { transition-delay: 0.15s; }
-.transition-panel:nth-child(5) { transition-delay: 0.2s; }
-
-
 .page-transition.active .transition-panel {
   animation: panelTransition 1.2s cubic-bezier(0.77, 0, 0.175, 1) forwards;
 }
-
 
 @keyframes panelTransition {
   0% {
@@ -976,7 +1002,6 @@ html, body {
     transform: translateY(-100%);
   }
 }
-
 
 /* Add gradient overlay for depth */
 .transition-overlay {
@@ -991,11 +1016,9 @@ html, body {
   pointer-events: none;
 }
 
-
 .page-transition.active .transition-overlay {
   animation: overlayFade 1.2s ease-in-out;
 }
-
 
 @keyframes overlayFade {
   0% { opacity: 0; }
@@ -1004,27 +1027,25 @@ html, body {
   100% { opacity: 0; }
 }
 
-
 /* Optional: Add subtle scale effect to the leaving/entering pages */
 .page-content {
   transition: transform 1.2s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
-
 .page-transition-active .leaving-page {
   transform: scale(0.95);
 }
-
 
 .page-transition-complete .entering-page {
   animation: scaleIn 0.6s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
 }
 
-
 @keyframes scaleIn {
-  0% { transform: scale(1.05); }
+  0% { transform: scale(0.95); }
   100% { transform: scale(1); }
 }
+
+
 
 
     /* Responsive Styles */
@@ -1187,6 +1208,14 @@ html, body {
   </style>
 </head>
 <body>
+
+  <!-- Custom cursor elements -->
+<div id="custom-cursor">
+  <div class="potion">
+    <img src="snmki2/userlmn_5675e28224a3070de422650dfdfd8004.png" class="cursor-image" alt="">
+  </div>
+</div>
+<div id="particles-container"></div>
   <!-- Page Transition Effect -->
   <div class="page-transition">
     <div class="transition-panel"></div>
@@ -1868,5 +1897,113 @@ The leaderboard is waiting.</em></p>
       });
     });
   </script>
+
+<script>
+  // Get cursor elements
+  const cursor = document.getElementById('custom-cursor');
+  const particlesContainer = document.getElementById('particles-container');
+  
+  // Last mouse position for velocity calculation
+  let lastX = 0;
+  let lastY = 0;
+  
+  // Track if mouse is moving
+  let isMoving = false;
+  let movingTimeout;
+  
+  // Track mouse movement
+  document.addEventListener('mousemove', (e) => {
+    // Update cursor position
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top = e.clientY + 'px';
+    
+    // Calculate velocity
+    const velX = Math.abs(e.clientX - lastX);
+    const velY = Math.abs(e.clientY - lastY);
+    const velocity = Math.min(Math.sqrt(velX * velX + velY * velY) / 10, 5);
+    
+    // Scale cursor based on movement (subtle effect)
+    cursor.style.transform = `translate(-50%, -50%) scale(${1 + velocity * 0.05})`;
+    
+    // Update last position
+    lastX = e.clientX;
+    lastY = e.clientY;
+    
+    // Create particles based on velocity
+    isMoving = true;
+    clearTimeout(movingTimeout);
+    
+    if (velocity > 0.5) {
+      createParticle(e.clientX, e.clientY, velocity);
+    }
+    
+    movingTimeout = setTimeout(() => {
+      isMoving = false;
+    }, 100);
+  });
+  
+  // Ensure cursor is visible when page loads
+  document.addEventListener('DOMContentLoaded', () => {
+    cursor.style.opacity = '1';
+  });
+  
+  // Hide cursor when mouse leaves window
+  document.addEventListener('mouseout', () => {
+    cursor.style.opacity = '0';
+  });
+  
+  // Show cursor when mouse enters window
+  document.addEventListener('mouseover', () => {
+    cursor.style.opacity = '1';
+  });
+  
+  // Create particle function
+  function createParticle(x, y, velocity) {
+    // Create new particle element
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    
+    // Random size based on velocity
+    const size = Math.random() * 3 * velocity + 2;
+    particle.style.width = size + 'px';
+    particle.style.height = size + 'px';
+    
+    // Set position slightly offset from cursor
+    const offsetX = (Math.random() - 0.5) * 20;
+    const offsetY = (Math.random() - 0.5) * 20;
+    particle.style.left = (x + offsetX) + 'px';
+    particle.style.top = (y + offsetY) + 'px';
+    
+    // Add to container
+    particlesContainer.appendChild(particle);
+    
+    // Animate the particle
+    const duration = Math.random() * 1000 + 500;
+    const directionX = (Math.random() - 0.5) * 2;
+    const directionY = (Math.random() - 0.5) * 2 + 1; // Slight upward bias
+    
+    // Animate with keyframes
+    particle.animate([
+      { 
+        transform: 'translate(0, 0) scale(1)', 
+        opacity: 0.8
+      },
+      { 
+        transform: `translate(${directionX * 50}px, ${directionY * 50}px) scale(0)`, 
+        opacity: 0
+      }
+    ], {
+      duration: duration,
+      easing: 'cubic-bezier(0.4, 0.0, 0.2, 1)'
+    });
+    
+    // Remove particle after animation completes
+    setTimeout(() => {
+      if (particle.parentNode === particlesContainer) {
+        particlesContainer.removeChild(particle);
+      }
+    }, duration);
+  }
+</script>
 </body>
 </html>
