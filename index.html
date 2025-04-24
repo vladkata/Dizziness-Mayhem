@@ -918,18 +918,11 @@ html, body {
   margin-top: 20px;
 }
 
-
-
-
-
     .leaderboard-table th, .leaderboard-table td {
       padding: 12px;
       text-align: left;
       border-bottom: 1px solid rgba(252, 215, 53, 0.2);
     }
-
-
-
 
     .leaderboard-table th {
       color: var(--accent);
@@ -938,9 +931,6 @@ html, body {
       letter-spacing: 1px;
     }
 
-
-
-
     .leaderboard-table tr:hover {
   background-color: rgba(252, 215, 53, 0.05);
 }
@@ -948,13 +938,9 @@ html, body {
 .leaderboard-table tbody tr:nth-child(4):hover,
 .leaderboard-table tbody tr:nth-child(5):hover {
   background-color: rgba(252, 215, 53, 0.07);
-  transform: scale(1.01);
   transition: all 0.2s ease-in-out;
   cursor: url('https://cur.cursors-4u.net/cursors/cur-13/cur1146.cur'), pointer;
 }
-
-
-
 
     /* Events Styling */
     .events-container {
@@ -964,8 +950,6 @@ html, body {
       box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
       text-align: center;
     }
-
-
 
 
     .events-container h4 {
@@ -1509,7 +1493,6 @@ html, body {
 
 /* Top 3 player hover effect */
 .top-player:hover {
-  transform: scale(1.02);
   background-blend-mode: lighten;
   box-shadow: 0 0 15px var(--accent), 0 0 30px rgba(252, 215, 53, 0.3);
   cursor: url('https://cur.cursors-4u.net/cursors/cur-13/cur1146.cur'), pointer;
@@ -1993,27 +1976,27 @@ The leaderboard is waiting.</em></p>
             <tbody>
               <tr class="top-player gold">
                 <td>🥇</td>
-                <td><a href="https://www.roblox.com/users/1/profile" target="_blank">MayhemMaster</a></td>
+                <td><a href="https://www.roblox.com/users/1736213825/profile" target="_blank">TheLordStudio</a></td>
                 <td>12,450</td>
               </tr>
               <tr class="top-player silver">
                 <td>🥈</td>
-                <td><a href="https://www.roblox.com/users/2/profile" target="_blank">DizzyChampion</a></td>
+                <td><a href="https://www.roblox.com/users/7355299146/profile" target="_blank">L14_Comp</a></td>
                 <td>11,285</td>
               </tr>
               <tr class="top-player bronze">
                 <td>🥉</td>
-                <td><a href="https://www.roblox.com/users/3/profile" target="_blank">ParkourPro</a></td>
+                <td><a href="https://www.roblox.com/users/8178111526/profile" target="_blank">Ao1Fear</a></td>
                 <td>10,750</td>
               </tr>
               <tr>
                 <td>4</td>
-                <td><a href="https://www.roblox.com/users/4/profile" target="_blank">JumpKing</a></td>
+                <td><a href="https://www.roblox.com/users/5785704401/profile" target="_blank">JinkaDot</a></td>
                 <td>9,840</td>
               </tr>
               <tr>
                 <td>5</td>
-                <td><a href="https://www.roblox.com/users/5/profile" target="_blank">LavaRunner</a></td>
+                <td><a href="https://www.roblox.com/users/2643357844/profile" target="_blank">NotTheLord</a></td>
                 <td>8,925</td>
               </tr>              
             </tbody>            
@@ -2082,9 +2065,9 @@ The leaderboard is waiting.</em></p>
         <div class="footer-section">
             <h4>Quick Links</h4>
             <ul>
-                <li><a href="#home">Home</a></li>
-                <li><a href="#how-to-play">Tutorial</a></li>
-                <li><a href="#updates">Updates</a></li>
+              <li><a href="#home" class="nav-link">Home</a></li>
+              <li><a href="#how-to-play" class="nav-link">Tutorial</a></li>
+              <li><a href="#updates" class="nav-link">Updates</a></li>              
             </ul>
         </div>
 
@@ -2284,31 +2267,43 @@ The leaderboard is waiting.</em></p>
    
     // Initialize page based on hash or default to home
     document.addEventListener('DOMContentLoaded', () => {
-      let currentPage = 'home';
-     
-      if (window.location.hash) {
-        currentPage = window.location.hash.substring(1);
+  let currentPage = window.location.hash ? window.location.hash.substring(1) : 'home';
+
+  function switchPage(pageId) {
+    pageContents.forEach(page => page.classList.remove('active'));
+    document.getElementById(pageId)?.classList.add('active');
+
+    navLinks.forEach(navLink => {
+      navLink.classList.remove('active');
+      if (navLink.getAttribute('href') === `#${pageId}`) {
+        navLink.classList.add('active');
       }
-     
-      // Hide all pages
-      pageContents.forEach(page => page.classList.remove('active'));
-     
-      // Show the current page
-      const targetPage = document.getElementById(currentPage);
-      if (targetPage) {
-        targetPage.classList.add('active');
-      } else {
-        document.getElementById('home').classList.add('active');
-      }
-     
-      // Update active nav link
-      navLinks.forEach(navLink => {
-        navLink.classList.remove('active');
-        if (navLink.getAttribute('href') === `#${currentPage}`) {
-          navLink.classList.add('active');
-        }
-      });
     });
+
+    window.scrollTo(0, 0);
+  }
+
+  switchPage(currentPage);
+
+  navLinks.forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+
+      const targetId = this.getAttribute('href').substring(1);
+      if (targetId === currentPage) return;
+
+      pageTransition.classList.add('active');
+      setTimeout(() => {
+        currentPage = targetId;
+        switchPage(targetId);
+        window.location.hash = `#${targetId}`;
+        setTimeout(() => {
+          pageTransition.classList.remove('active');
+        }, 1000);
+      }, 500);
+    });
+  });
+});
   </script>
 
 
