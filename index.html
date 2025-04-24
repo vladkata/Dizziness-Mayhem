@@ -33,8 +33,41 @@
   pointer-events: none;
 }
 
+/* Top 3 leaderboard styling */
+.top-player {
+  font-weight: 700;
+  position: relative;
+  animation: popIn 0.6s ease-out both;
+}
 
+.top-player.gold {
+  background: linear-gradient(to right, #ffd70033, #fff8dc22);
+  color: #ffd700;
+  box-shadow: 0 0 10px #ffd70099;
+}
 
+.top-player.silver {
+  background: linear-gradient(to right, #c0c0c033, #e0e0e022);
+  color: #c0c0c0;
+  box-shadow: 0 0 8px #c0c0c099;
+}
+
+.top-player.bronze {
+  background: linear-gradient(to right, #cd7f3233, #ffe4b522);
+  color: #cd7f32;
+  box-shadow: 0 0 6px #cd7f3299;
+}
+
+@keyframes popIn {
+  0% {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
 
 /* Custom cursor container */
 #custom-cursor {
@@ -1928,18 +1961,18 @@ The leaderboard is waiting.</em></p>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>1</td>
+              <tr class="top-player gold">
+                <td>🥇</td>
                 <td>MayhemMaster</td>
                 <td>12,450</td>
               </tr>
-              <tr>
-                <td>2</td>
+              <tr class="top-player silver">
+                <td>🥈</td>
                 <td>DizzyChampion</td>
                 <td>11,285</td>
               </tr>
-              <tr>
-                <td>3</td>
+              <tr class="top-player bronze">
+                <td>🥉</td>
                 <td>ParkourPro</td>
                 <td>10,750</td>
               </tr>
@@ -2358,4 +2391,3 @@ The leaderboard is waiting.</em></p>
 </script>
 </body>
 </html>
-
