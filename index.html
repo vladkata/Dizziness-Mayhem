@@ -938,8 +938,16 @@ html, body {
 
 
     .leaderboard-table tr:hover {
-      background-color: rgba(252, 215, 53, 0.05);
-    }
+  background-color: rgba(252, 215, 53, 0.05);
+}
+
+.leaderboard-table tbody tr:nth-child(4):hover,
+.leaderboard-table tbody tr:nth-child(5):hover {
+  background-color: rgba(252, 215, 53, 0.07);
+  transform: scale(1.01);
+  transition: all 0.2s ease-in-out;
+  cursor: url('https://cur.cursors-4u.net/cursors/cur-13/cur1146.cur'), pointer;
+}
 
 
 
