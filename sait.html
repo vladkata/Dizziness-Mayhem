@@ -1,0 +1,1849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dizziness Mayhem</title>
+  <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;700&family=Exo+2:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #47e347;
+      --bg-dark: #0a0a0a;
+      --accent: rgb(252, 215, 53);
+      --text-color: rgb(220, 220, 220);
+      --accent-light: rgba(252, 215, 53, 0.7);
+    }
+
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      scrollbar-width: none;
+    }
+
+
+    *::-webkit-scrollbar {
+      display: none;
+    }
+
+
+    html, body {
+      overflow-x: hidden;
+      -ms-overflow-style: none;
+    }
+
+
+    body {
+      font-family: 'Exo 2', 'Urbanist', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-color);
+      line-height: 1.7;
+      letter-spacing: 0.3px;
+      font-weight: 400;
+    }
+
+
+    header {
+      background: #121212;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 5px solid var(--accent);
+      box-shadow: 0 2px 15px rgba(252, 215, 53, 0.3);
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1000;
+      transition: all 0.3s ease;
+    }
+
+
+    header.scrolled {
+      padding: 10px 40px;
+      background: rgba(18, 18, 18, 0.95);
+      backdrop-filter: blur(10px);
+    }
+
+
+    header h1 {
+      font-size: 2.2rem;
+      font-family: 'Urbanist', sans-serif;
+      color: var(--accent);
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      letter-spacing: 1px;
+      font-weight: 700;
+    }
+
+
+    nav {
+      display: flex;
+      align-items: center;
+    }
+
+
+    nav a {
+      color: var(--text-color);
+      margin-left: 20px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      padding: 8px 16px;
+      border-radius: 30px;
+      letter-spacing: 0.8px;
+      position: relative;
+    }
+
+
+    nav a:hover {
+      color: #fff;
+      text-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent-light);
+      transform: translateY(-2px);
+    }
+
+
+    nav a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 0;
+      height: 2px;
+      background-color: var(--accent);
+      transition: all 0.3s ease;
+      transform: translateX(-50%);
+    }
+
+
+    nav a:hover::after {
+      width: 70%;
+    }
+
+
+    .play-button {
+      background-color: var(--accent);
+      color: #121212 !important;
+      font-weight: 600;
+      padding: 10px 20px;
+      border-radius: 30px;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      box-shadow: 0 4px 15px rgba(252, 215, 53, 0.4);
+      transition: all 0.3s ease;
+    }
+
+
+    .play-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(252, 215, 53, 0.6);
+      text-shadow: none !important;
+    }
+
+
+    .play-button::after {
+      display: none;
+    }
+
+
+    .hamburger {
+      display: none;
+      cursor: pointer;
+      z-index: 1001;
+    }
+
+
+    .hamburger div {
+      width: 25px;
+      height: 3px;
+      background-color: var(--accent);
+      margin: 5px;
+      transition: all 0.3s ease;
+    }
+
+
+    .main-content {
+      margin-top: 80px; /* Account for fixed header */
+      position: relative;
+      min-height: calc(100vh - 80px);
+    }
+
+
+    .page-content {
+      opacity: 0;
+      display: none;
+      transform: translateY(20px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+
+    .page-content.active {
+      opacity: 1;
+      display: block;
+      transform: translateY(0);
+    }
+
+
+    .hero {
+      height: 100vh;
+      background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/api/placeholder/1920/1080') center/cover no-repeat;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 40px;
+      position: relative;
+      overflow: hidden;
+      margin-top: -80px; /* Offset the header margin */
+    }
+
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, transparent 0%, #0a0a0a 90%);
+      opacity: 0.7;
+    }
+
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 150px;
+      background: linear-gradient(to top, var(--bg-dark), transparent);
+    }
+
+
+    .hero h2 {
+      font-size: 4rem;
+      font-family: 'Urbanist', sans-serif;
+      margin-bottom: 40px;
+      color: var(--accent);
+      text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);
+      animation: glow 2s ease-in-out infinite alternate;
+      position: relative;
+      z-index: 2;
+      font-weight: 700;
+    }
+
+
+    @keyframes glow {
+      from {
+        text-shadow: 0 0 5px rgba(252, 215, 53, 0.2), 0 0 10px rgba(252, 215, 53, 0.2);
+      }
+      to {
+        text-shadow: 0 0 10px rgba(252, 215, 53, 0.5), 0 0 20px rgba(252, 215, 53, 0.3);
+      }
+    }
+
+
+    @keyframes fadeInDown {
+      0% {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+
+    .hero a {
+      background-color: var(--accent);
+      color: #121212;
+      padding: 15px 45px;
+      font-size: 1.2rem;
+      text-decoration: none;
+      border-radius: 50px;
+      transition: all 0.4s ease;
+      font-weight: 600;
+      box-shadow: 0 5px 20px rgba(252, 215, 53, 0.4);
+      position: relative;
+      overflow: hidden;
+      z-index: 2;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+
+    .hero a::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: all 0.5s ease;
+    }
+
+
+    .hero a:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(252, 215, 53, 0.6);
+      background-color: rgb(253, 220, 70);
+    }
+
+
+    .hero a:hover::before {
+      left: 100%;
+    }
+
+
+    .hero a:active {
+      transform: translateY(1px);
+    }
+
+
+    .section {
+      padding: 100px 20px;
+      max-width: 1000px;
+      margin: auto;
+      min-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+
+    .section h3 {
+      font-size: 2.5rem;
+      font-family: 'Urbanist', sans-serif;
+      margin-bottom: 40px;
+      color: var(--accent);
+      position: relative;
+      display: inline-block;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 700;
+    }
+
+
+    .section h3::after {
+      content: '';
+      position: absolute;
+      bottom: -15px;
+      left: 0;
+      width: 80px;
+      height: 4px;
+      background-color: var(--accent);
+      border-radius: 2px;
+    }
+
+
+    .section p {
+      font-size: 1.15rem;
+      margin-bottom: 30px;
+      line-height: 1.8;
+      color: var(--text-color);
+      text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+      font-weight: 300;
+      max-width: 90%;
+    }
+
+
+    .patch-note {
+      background-color: rgba(180, 20, 180, 0.05);
+      padding: 30px;
+      margin-bottom: 40px;
+      border-radius: 12px;
+      transition: all 0.4s ease;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+      position: relative;
+      overflow: hidden;
+      border-left: none;
+    }
+
+
+    .patch-note::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background-color: var(--accent);
+      transform: scaleY(0);
+      transform-origin: bottom;
+      transition: transform 0.4s ease;
+    }
+
+
+    .patch-note:hover {
+      transform: translateX(10px);
+      box-shadow: 0 8px 25px rgba(252, 215, 53, 0.3);
+      background-color: rgba(252, 215, 53, 0.1);
+    }
+
+
+    .patch-note:hover::before {
+      transform: scaleY(1);
+    }
+
+
+    .patch-note strong {
+      font-size: 1.3rem;
+      display: block;
+      margin-bottom: 15px;
+      color: var(--accent);
+      letter-spacing: 0.5px;
+      font-weight: 600;
+    }
+
+
+    .patch-note ul {
+      margin-left: 25px;
+      list-style-type: none;
+    }
+
+
+    .patch-note li {
+      margin-bottom: 12px;
+      position: relative;
+      padding-left: 25px;
+      font-size: 1.05rem;
+      line-height: 1.6;
+      letter-spacing: 0.3px;
+      font-weight: 400;
+    }
+
+
+    .patch-note li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+
+    /* Tabs Styling */
+    .tabs {
+      display: flex;
+      border-bottom: 2px solid rgba(252, 215, 53, 0.3);
+      margin-bottom: 30px;
+    }
+
+
+    .tab-button {
+      padding: 12px 24px;
+      background: transparent;
+      border: none;
+      color: var(--text-color);
+      font-size: 1.1rem;
+      font-family: 'Exo 2', sans-serif;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+
+
+    .tab-button::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background-color: var(--accent);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+
+
+    .tab-button.active {
+      color: var(--accent);
+    }
+
+
+    .tab-button.active::after {
+      transform: scaleX(1);
+    }
+
+
+    .tab-button:hover {
+      color: var(--accent-light);
+    }
+
+
+    .tab-content {
+      display: none;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+
+    .tab-content.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+      animation: fadeIn 0.5s ease;
+    }
+
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+
+    /* Biomes Styling */
+    .biomes-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+      gap: 30px;
+      margin-top: 40px;
+    }
+
+
+    .biome-card {
+      background-color: rgba(180, 20, 180, 0.05);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+      transition: all 0.4s ease;
+      position: relative;
+    }
+
+
+    .biome-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 30px rgba(252, 215, 53, 0.3);
+    }
+
+
+    .biome-img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      transition: all 0.5s ease;
+      cursor: pointer;
+    }
+
+
+    .biome-card:hover .biome-img {
+      filter: brightness(1.2);
+    }
+
+
+    .biome-content {
+      padding: 20px;
+    }
+
+
+    .biome-content h4 {
+      font-size: 1.5rem;
+      color: var(--accent);
+      margin-bottom: 15px;
+      font-weight: 600;
+    }
+
+
+    .biome-content p {
+      font-size: 1rem;
+      line-height: 1.6;
+      margin-bottom: 0;
+    }
+
+
+    /* Modal Styling */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.9);
+      padding: 20px;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+
+    .modal.show {
+      opacity: 1;
+    }
+
+
+    .modal-content {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+    }
+
+
+    .modal-img {
+      max-width: 90%;
+      max-height: 90%;
+      border: 3px solid var(--accent);
+      border-radius: 5px;
+      transform: scale(0.9);
+      opacity: 0;
+      transition: all 0.5s ease;
+    }
+
+
+    .modal.show .modal-img {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+
+    .close {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      color: var(--accent);
+      font-size: 40px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+
+    .close:hover {
+      color: white;
+      transform: scale(1.1);
+    }
+
+
+    /* Leaderboard Styling */
+    .leaderboard-container {
+      background-color: rgba(180, 20, 180, 0.05);
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+      text-align: center;
+    }
+
+
+    .leaderboard-container h4 {
+      font-size: 1.8rem;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+
+
+    .leaderboard-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+
+    .leaderboard-table th, .leaderboard-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid rgba(252, 215, 53, 0.2);
+    }
+
+
+    .leaderboard-table th {
+      color: var(--accent);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+
+    .leaderboard-table tr:hover {
+      background-color: rgba(252, 215, 53, 0.05);
+    }
+
+
+    /* Events Styling */
+    .events-container {
+      background-color: rgba(180, 20, 180, 0.05);
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+      text-align: center;
+    }
+
+
+    .events-container h4 {
+      font-size: 1.8rem;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+
+
+    .events-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+
+    .event-card {
+      background-color: rgba(252, 215, 53, 0.05);
+      border-radius: 10px;
+      padding: 20px;
+      transition: all 0.3s ease;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    }
+
+
+    .event-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(252, 215, 53, 0.2);
+    }
+
+
+    .event-card h5 {
+      font-size: 1.3rem;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+
+    .event-card p {
+      font-size: 1rem;
+      margin-bottom: 15px;
+    }
+
+
+    .event-date {
+      display: inline-block;
+      background-color: rgba(252, 215, 53, 0.2);
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 0.9rem;
+      color: var(--accent);
+    }
+
+
+    /* Footer Styling */
+    footer {
+      background-color: #121212;
+      padding: 50px 30px 30px;
+      border-top: 2px solid var(--accent);
+      position: relative;
+      color: rgba(220, 220, 220, 0.8);
+      font-weight: 300;
+      letter-spacing: 0.5px;
+    }
+
+
+    footer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: linear-gradient(to right, transparent, var(--accent), transparent);
+      opacity: 0.6;
+    }
+
+
+    .footer-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+
+    .footer-section h4 {
+      color: var(--accent);
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      font-weight: 600;
+      position: relative;
+      display: inline-block;
+    }
+
+
+    .footer-section h4::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 0;
+      width: 50px;
+      height: 2px;
+      background-color: var(--accent);
+    }
+
+
+    .footer-section p {
+      margin-bottom: 15px;
+      line-height: 1.6;
+    }
+
+
+    .footer-section ul {
+      list-style: none;
+    }
+
+
+    .footer-section ul li {
+      margin-bottom: 10px;
+    }
+
+
+    .footer-section ul li a {
+      color: var(--text-color);
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+
+    .footer-section ul li a:hover {
+      color: var(--accent);
+      text-shadow: 0 0 5px rgba(252, 215, 53, 0.4);
+      padding-left: 5px;
+    }
+
+
+    .contact-info {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+
+    .contact-info i {
+      color: var(--accent);
+      margin-right: 10px;
+      font-size: 1.2rem;
+    }
+
+
+    .social-links {
+      display: flex;
+      margin-top: 20px;
+    }
+
+
+    .social-links a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background-color: rgba(252, 215, 53, 0.1);
+      border-radius: 50%;
+      margin-right: 10px;
+      transition: all 0.3s ease;
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+
+    .social-links a:hover {
+      background-color: var(--accent);
+      color: #121212;
+      transform: translateY(-3px);
+    }
+
+
+    .footer-bottom {
+      text-align: center;
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(252, 215, 53, 0.1);
+      font-size: 0.9rem;
+    }
+
+
+    /* Back to top button */
+    .back-to-top {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background-color: var(--accent);
+      color: #121212;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.5rem;
+      cursor: pointer;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.4s ease;
+      z-index: 999;
+      box-shadow: 0 4px 15px rgba(252, 215, 53, 0.4);
+    }
+
+
+    .back-to-top.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+
+    .back-to-top:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(252, 215, 53, 0.6);
+    }
+
+
+    /* Modern Page Transition Animation */
+.page-transition {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  pointer-events: none;
+  display: flex;
+  overflow: hidden;
+}
+
+
+.transition-panel {
+  flex: 1;
+  background-color: var(--accent);
+  transform: translateY(100%);
+  will-change: transform;
+}
+
+
+/* Create 5 panels for a staggered effect */
+.transition-panel:nth-child(1) { transition-delay: 0s; }
+.transition-panel:nth-child(2) { transition-delay: 0.05s; }
+.transition-panel:nth-child(3) { transition-delay: 0.1s; }
+.transition-panel:nth-child(4) { transition-delay: 0.15s; }
+.transition-panel:nth-child(5) { transition-delay: 0.2s; }
+
+
+.page-transition.active .transition-panel {
+  animation: panelTransition 1.2s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+}
+
+
+@keyframes panelTransition {
+  0% {
+    transform: translateY(100%);
+  }
+  50% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-100%);
+  }
+}
+
+
+/* Add gradient overlay for depth */
+.transition-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, rgba(255,255,255,0.2) 0%, rgba(0,0,0,0.1) 70%);
+  opacity: 0;
+  z-index: 10000;
+  pointer-events: none;
+}
+
+
+.page-transition.active .transition-overlay {
+  animation: overlayFade 1.2s ease-in-out;
+}
+
+
+@keyframes overlayFade {
+  0% { opacity: 0; }
+  25% { opacity: 1; }
+  75% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+
+/* Optional: Add subtle scale effect to the leaving/entering pages */
+.page-content {
+  transition: transform 1.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+
+.page-transition-active .leaving-page {
+  transform: scale(0.95);
+}
+
+
+.page-transition-complete .entering-page {
+  animation: scaleIn 0.6s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+}
+
+
+@keyframes scaleIn {
+  0% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+
+    /* Responsive Styles */
+    @media (max-width: 992px) {
+      .section {
+        padding: 80px 20px;
+      }
+     
+      .biomes-container {
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      }
+    }
+
+
+    @media (max-width: 768px) {
+      body.menu-open {
+        overflow: hidden;
+      }
+     
+      header {
+        padding: 15px 20px;
+      }
+     
+      header h1 {
+        font-size: 1.8rem;
+      }
+     
+      .hamburger {
+        display: block;
+      }
+     
+      .hamburger.active div:nth-child(1) {
+        transform: rotate(45deg) translate(5px, 6px);
+      }
+     
+      .hamburger.active div:nth-child(2) {
+        opacity: 0;
+      }
+     
+      .hamburger.active div:nth-child(3) {
+        transform: rotate(-45deg) translate(5px, -6px);
+      }
+     
+      nav {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 70%;
+        height: 100vh;
+        background: rgba(18, 18, 18, 0.98);
+        backdrop-filter: blur(10px);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        transition: right 0.5s ease;
+        z-index: 1000;
+      }
+     
+      nav.active {
+        right: 0;
+      }
+     
+      nav a {
+        margin: 15px 0;
+        font-size: 1.2rem;
+      }
+     
+      .hero h2 {
+        font-size: 2.5rem;
+      }
+     
+      .section {
+        padding: 60px 15px;
+      }
+     
+      .section h3 {
+        font-size: 2rem;
+      }
+     
+      .section p {
+        font-size: 1.1rem;
+        max-width: 100%;
+      }
+     
+      .biomes-container {
+        grid-template-columns: 1fr;
+      }
+     
+      .tab-button {
+        padding: 10px 15px;
+        font-size: 0.9rem;
+      }
+     
+      .footer-content {
+        grid-template-columns: 1fr;
+      }
+     
+      .footer-section {
+        margin-bottom: 30px;
+      }
+    }
+
+
+    @media (max-width: 480px) {
+      header h1 {
+        font-size: 1.6rem;
+      }
+     
+      .hero h2 {
+        font-size: 2rem;
+      }
+     
+      .hero a {
+        padding: 12px 30px;
+        font-size: 1rem;
+      }
+     
+      .section h3 {
+        font-size: 1.8rem;
+      }
+     
+      .tabs {
+        flex-direction: column;
+      }
+     
+      .tab-button {
+        width: 100%;
+        text-align: center;
+        border-bottom: 1px solid rgba(252, 215, 53, 0.1);
+      }
+     
+      .tab-button::after {
+        display: none;
+      }
+     
+      .patch-note {
+        padding: 20px;
+      }
+    }
+    .social-links {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.social-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.social-icon:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 15px rgba(252, 215, 53, 0.4);
+}
+
+  </style>
+</head>
+<body>
+  <!-- Page Transition Effect -->
+  <div class="page-transition">
+    <div class="transition-panel"></div>
+    <div class="transition-panel"></div>
+    <div class="transition-panel"></div>
+    <div class="transition-panel"></div>
+    <div class="transition-panel"></div>
+    <div class="transition-overlay"></div>
+  </div>
+
+
+  <header>
+    <h1>Dizziness Mayhem</h1>
+    <div class="hamburger">
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+    <nav>
+      <a href="#home" class="nav-link active">Home</a>
+      <a href="#about" class="nav-link">About</a>
+      <a href="#how-to-play" class="nav-link">Tutorial</a>
+      <a href="#updates" class="nav-link">Updates</a>
+      <a href="#biomes" class="nav-link">Biomes</a>
+      <a href="#leaderboard" class="nav-link">Leaderboard</a>
+      <a href="#events" class="nav-link">Events</a>
+      <a href="https://www.roblox.com/games/16713118861/Game" target="_blank" class="play-button">Play</a>
+    </nav>
+  </header>
+
+
+  <div class="main-content">
+    <!-- Home Page -->
+    <div id="home" class="page-content active">
+      <section class="hero">
+        <h2>Abilities. Dizziness. Total Mayhem...</h2>
+        <a href="https://www.roblox.com/games/16713118861/Game" target="_blank">Play Now</a>
+      </section>
+    </div>
+
+
+    <!-- About Page -->
+    <div id="about" class="page-content">
+      <section class="section">
+        <h3>About The Game</h3>
+        <p><strong>Dizziness Mayhem</strong> is a fast-paced, chaotic parkour experience like no other — blending smooth movement, wild potion effects, and addictive progression into one vibrant, competitive package.</p>
+
+
+<p>Drink a potion to gain incredible abilities — but beware, these magical mixtures come with a twist: they'll make you dizzy! As your screen tilts and sways, you’ll sprint through hand-crafted biomes like Grassland, Snowland, Desertland, and Lavaland, each packed with unique visuals, sounds, and movement challenges.</p>
+
+
+<p>Mastering the obby takes skill and speed — but also strategy. Potions grant different effects: some boost your speed, others enhance jumping, double-jump, or even add quirky, unpredictable abilities. Every potion has its own duration and cooldown stats, visually represented in-game for easy comparison.</p>
+
+
+<p>As you complete runs, you’ll collect coins and gain XP. Use coins to <strong>roll for new potions</strong> in a fun gacha-style system, with rarities ranging from <em>Uncommon</em> to <em>Legendary</em>, and quirky tiers like <em>Goated</em> and <em>W</em>. Better potions not only make the obby more satisfying, but also increase your XP gains.</p>
+
+
+<p>Progression is meaningful: hitting checkpoints earns more XP, and finishing the full course provides a huge reward. Complete the obby ten times and watch it <strong>explode</strong> in a dynamic animation — triggering an entirely new set of randomized stages for fresh replayability.</p>
+
+
+<p>Whether you're competing for leaderboard dominance or just chasing the next bizarre potion effect, <strong>Dizziness Mayhem</strong> keeps players coming back. Those who hold the top leaderboard position for a full month will win a <strong>real Robux prize</strong>, making every jump, dodge, and potion roll matter.</p>
+
+
+<p><em>Can you handle the mayhem?<br>
+Drink up. Run fast. Don’t fall.<br>
+The leaderboard is waiting.</em></p>
+
+
+      </section>
+    </div>
+
+
+    <!-- How To Play Page -->
+    <div id="how-to-play" class="page-content">
+      <section class="section">
+        <h3>Tutorial</h3>
+        <p>
+          Dizziness Mayhem is a unique game combining elements of obstacle parkour with simulator style progression.
+          Here's how to begin your adventure:
+        </p>
+        <div class="patch-note">
+          <strong>Basic Controls</strong>
+          <ul>
+            <li>Movement: WASD keys or arrow keys</li>
+            <li>Jump: Space</li>
+            <li>Equip Potion: 1 or click the toolbar</li>
+            <li>Move camera: Move your mouse around</li>
+          </ul>
+        </div>
+        <div class="patch-note">
+          <strong>Game Objectives</strong>
+          <ul>
+            <li>Use potions for special abilities</li>
+            <li>Complete challenging parkour levels across various biomes</li>
+            <li>Collect Dizzy Coins and XP</li>
+            <li>Use Dizzy Coins to roll rare potions</li>
+            <li>Level up and upgrade your rank for special multipliers</li>
+            <li>Climb the leaderboard and become the top player in the entire world!</li>
+          </ul>
+        </div>
+        <div class="patch-note">
+          <strong>Tips & Tricks</strong>
+          <ul>
+            <li>Take your time on challenging jumps - rushing leads to mistakes</li>
+            <li>Collect daily playtime rewards</li>
+            <li>Check for hidden paths that might contain bonus coins</li>
+            <li>Use the explodemeter to your advantage</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+
+
+    <!-- Updates Page -->
+    <div id="updates" class="page-content">
+      <section class="section">
+        <h3>Updates</h3>
+       
+        <div class="tabs">
+          <button class="tab-button active" onclick="openTab(event, 'recent-updates')">Recent Updates</button>
+          <button class="tab-button" onclick="openTab(event, 'all-updates')">All Updates</button>
+        </div>
+
+
+        <div id="recent-updates" class="tab-content active">
+          <div class="patch-note">
+            <strong>v1.3.2 - Alchemy Upgrade</strong>
+            <ul>
+                <li>Updated and optimized the Potion Rolling Station</li>
+                <li>Fixed all remaining glitches and visual inconsistencies</li>
+                <li>Designed a sleek new toolbar UI</li>
+            </ul>
+          </div>
+
+
+          <div class="patch-note">
+            <strong>v1.2.1 - Enhanced Experience</strong>
+            <ul>
+                <li>Reworked multiple backend systems for efficiency</li>
+                <li>Added a new End Zone layout</li>
+                <li>Designed a sleek new toolbar UI</li>
+            </ul>
+          </div>
+
+
+          <div class="patch-note">
+            <strong>v1.1 - Systems Expansion</strong>
+            <ul>
+                <li>Introduced the Potion Rolling Station</li>
+                <li>Fully redesigned the Rank-Up Station for clarity and impact</li>
+                <li>Optimized backend to reduce exploits and improve security</li>
+            </ul>
+          </div>
+        </div>
+
+
+        <div id="all-updates" class="tab-content">
+            <div class="patch-note">
+                <strong>v1.3.2 - Alchemy Upgrade</strong>
+                <ul>
+                  <li>Updated and optimized the Potion Rolling Station</li>
+                  <li>Fixed all remaining glitches and visual inconsistencies</li>
+                  <li>Designed a sleek new toolbar UI</li>
+                </ul>
+              </div>
+
+
+          <div class="patch-note">
+            <strong>v1.2.1 - Enhanced Experience</strong>
+            <ul>
+              <li>Reworked multiple backend systems for efficiency</li>
+              <li>Added a new End Zone layout</li>
+              <li>Designed a sleek new toolbar UI</li>
+            </ul>
+          </div>
+         
+          <div class="patch-note">
+            <strong>v1.1 - Systems Expansion</strong>
+            <ul>
+              <li>Introduced the Potion Rolling Station</li>
+              <li>Fully redesigned the Rank-Up Station for clarity and impact</li>
+              <li>Optimized backend to reduce exploits and improve security</li>
+            </ul>
+          </div>
+         
+          <div class="patch-note">
+            <strong>v1.0.1 – Stability & Polish</strong>
+            <ul>
+              <li>Resolved all known bugs</li>
+              <li>Polished visuals, systems, and performance across the game</li>
+            </ul>
+          </div>
+
+
+          <div class="patch-note">
+            <strong>v1.0 – The Big Overhaul</strong>
+            <ul>
+              <li>Fully reworked player movement and core physics</li>
+              <li>Redesigned the entire UI for a cleaner experience</li>
+              <li>Transitioned to a new character rig for smoother animations</li>
+              <li>Refactored and optimized all core scripts</li>
+            </ul>
+          </div>
+
+
+          <div class="patch-note">
+            <strong>v0.9 – Player Interface Update</strong>
+            <ul>
+              <li>Added a new Settings menu</li>
+              <li>Included a Feedback section for player suggestions</li>
+            </ul>
+          </div>
+
+
+          <div class="patch-note">
+            <strong>v0.8.2 – Brewmaster's Update</strong>
+            <ul>
+              <li>Introduced several new potion types</li>
+              <li>Enhanced and refined the dizziness simulation</li>
+            </ul>
+          </div>
+
+
+          <div class="patch-note">
+            <strong>v0.8.1 – Victory Protocols</strong>
+            <ul>
+              <li>Developed initial win logic and end-game functionality</li>
+              <li>Implemented the obby explosion effect</li>
+            </ul>
+          </div>
+
+
+          <div class="patch-note">
+            <strong>v0.8 – Mayhem Unleashed</strong>
+            <ul>
+              <li>Added the Explodemeter to track obby resets</li>
+              <li>Introduced a basic obby generation system</li>
+              <li>Designed the End Zone for completed runs</li>
+            </ul>
+          </div>
+
+
+          <div class="patch-note">
+            <strong>v0.7 – Into the Fire</strong>
+            <ul>
+              <li>Created the intense Lava Land biome</li>
+              <li>Introduced Dizzy Coins as in-game currency</li>
+            </ul>
+          </div>
+
+
+          <div class="patch-note">
+            <strong>v0.6 – Sands of Speed</strong>
+            <ul>
+              <li>Launched the Desert Land biome</li>
+            </ul>
+          </div>
+
+
+          <div class="patch-note">
+            <strong>v0.5 – Snowy Ascension</strong>
+            <ul>
+              <li>Added the Snow Land biome</li>
+              <li>Introduced the Rank-Up Station</li>
+            </ul>
+          </div>
+
+
+          <div class="patch-note">
+            <strong>v0.4 – Grass Land Expansion</strong>
+            <ul>
+              <li>Released the first biome: Grass Land</li>
+            </ul>
+          </div>
+
+
+          <div class="patch-note">
+            <strong>v0.3 – The Hub Awakens</strong>
+            <ul>
+              <li>Built the main lobby area</li>
+              <li>Added a global leaderboard to track top players</li>
+              <li>Created the Robux shop for premium items</li>
+              <li>Introduced a real-time obby progress bar</li>
+            </ul>
+          </div>
+
+
+          <div class="patch-note">
+            <strong>v0.2 – Core Systems Online</strong>
+            <ul>
+              <li>Integrated a data-saving system</li>
+              <li>Designed and implemented a foundational UI</li>
+              <li>Introduced playtime reward gifts</li>
+            </ul>
+          </div>
+
+
+          <div class="patch-note">
+            <strong>v0.1 – Foundations of Mayhem</strong>
+            <ul>
+              <li>Introduced the very first potion</li>
+              <li>Implemented core dizziness simulation mechanics</li>
+              <li>Added a basic toolbar for player interaction</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </div>
+
+
+    <!-- Biomes Page -->
+    <div id="biomes" class="page-content">
+      <section class="section">
+        <h3>Obby Biomes</h3>
+        <p>
+          Explore four unique biomes, each with different challenges and obstacles.
+          Each biome has its own unique appearance and weather!
+        </p>
+
+
+        <div class="biomes-container">
+          <div class="biome-card">
+            <img src="snmki2/image.png" alt="Grass Land Biome" class="biome-img" onclick="openModal(this.src, 'Grass Land')">
+            <div class="biome-content">
+              <h4>Grass Land</h4>
+              <p>The first biome, perfect for beginners. Learn basic movements and game mechanics while navigating through green meadows and bright forests.</p>
+            </div>
+          </div>
+
+
+          <div class="biome-card">
+            <img src="snmki2/snowland.jpg" alt="Snow Land Biome" class="biome-img" onclick="openModal(this.src, 'Snow Land')">
+            <div class="biome-content">
+              <h4>Snow Land</h4>
+              <p>Snowy peaks and slippery ice platforms require precise movement and balance. Watch out for falling snowballs and hidden crevasses!</p>
+            </div>
+          </div>
+
+
+          <div class="biome-card">
+            <img src="snmki2/image (1).jpg" alt="Desert Land Biome" class="biome-img" onclick="openModal(this.src, 'Desert Land')">
+            <div class="biome-content">
+              <h4>Desert Land</h4>
+              <p>Hot sands and quick sandstorms increase the challenge. Use sand dunes for acceleration and beware of rotating traps hidden beneath the surface.</p>
+            </div>
+          </div>
+
+
+          <div class="biome-card">
+            <img src="snmki2/image (1).png" alt="Lava Land Biome" class="biome-img" onclick="openModal(this.src, 'Lava Land')">
+            <div class="biome-content">
+              <h4>Lava Land</h4>
+              <p>The most dangerous biome with bubbling lava and fire eruptions. Only the most experienced players will manage to cross this burning terrain.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+
+    <!-- Leaderboard Page -->
+    <div id="leaderboard" class="page-content">
+      <section class="section">
+        <h3>Leaderboard</h3>
+        <div class="leaderboard-container">
+          <h4>Top Players</h4>
+          <p>Compete with other players for the highest level!</p>
+         
+          <table class="leaderboard-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Player</th>
+                <th>Level</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>MayhemMaster</td>
+                <td>12,450</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>DizzyChampion</td>
+                <td>11,285</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>ParkourPro</td>
+                <td>10,750</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td>JumpKing</td>
+                <td>9,840</td>
+              </tr>
+              <tr>
+                <td>5</td>
+                <td>LavaRunner</td>
+                <td>8,925</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+
+    <!-- Events Page -->
+    <div id="events" class="page-content">
+      <section class="section">
+        <h3>Events</h3>
+        <div class="events-container">
+          <h4>Upcoming Events</h4>
+          <p>Join special limited-time events for exclusive rewards and unique challenges!</p>
+         
+          <div class="events-list">
+            <div class="event-card">
+              <h5>Extreme Dizzy Challenge</h5>
+              <p>Complete the most difficult parkour course with maximum dizziness effect. Winners receive exclusive character skins!</p>
+              <span class="event-date">May 1-7, 2025</span>
+            </div>
+           
+            <div class="event-card">
+              <h5>Coin Rush Weekend</h5>
+              <p>Double Dizzy Coins on all completed levels during the weekend.</p>
+              <span class="event-date">May 15-17, 2025</span>
+            </div>
+           
+            <div class="event-card">
+              <h5>New Biome Preview</h5>
+              <p>Be the first to experience our upcoming Crystal Caves biome before its official release!</p>
+              <span class="event-date">August 1-3, 2025</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+
+  <div id="imageModal" class="modal">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <div class="modal-content">
+      <img id="modalImage" class="modal-img" src="" alt="">
+    </div>
+  </div>
+
+
+  <footer>
+    <div class="footer-content">
+        <div class="footer-section">
+            <h4>Quote of the day</h4>
+            <p>The dizzier the path, the greater the reward. Drink up, don’t slow down — mayhem waits for no one.</p>
+            <p>© 2025 Dizziness Mayhem. All rights reserved.</p>
+        </div>
+
+        <div class="footer-section">
+            <h4>Quick Links</h4>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#how-to-play">Tutorial</a></li>
+                <li><a href="#updates">Updates</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-section">
+            <h4>Community</h4>
+            <ul>
+                <li><a href="https://discord.gg/qpa5XtzQRE" target="_blank">Discord Server</a></li>
+                <li><a href="https://www.roblox.com/communities/9643221" target="_blank">Roblox Group</a></li>
+                <li><a href="https://www.youtube.com/@TheLordStudio" target="_blank">YouTube</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-section">
+            <h4>Contact Us</h4>
+            <div class="contact-info">
+                <i>✉</i>
+                <span>dizzinessmayhem@gmail.com</span>
+            </div>
+            <div class="contact-info">
+                <i>📞</i>
+                <span>+1 (555) 123-4567</span>
+            </div>
+            <div class="social-links">
+                <a href="#" target="_blank">
+                    <img src="snmki2/facebook_icon (1).png" alt="Facebook" class="social-icon">
+                </a>
+                <a href="#" target="_blank">
+                    <img src="snmki2/twitter_iconфинал.png" alt="Twitter" class="social-icon">
+                </a>
+                <a href="#" target="_blank">
+                    <img src="snmki2/instagram_icon.png" alt="Instagram" class="social-icon">
+                </a>
+                <a href="#" target="_blank">
+                    <img src="snmki2/youtube.png" alt="YouTube" class="social-icon">
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <p>Designed by the Dizziness Mayhem Team 🚀</p>
+    </div>
+</footer>
+
+
+
+  <a href="#" class="back-to-top" id="backToTop">↑</a>
+
+
+  <script>
+    // Navigation functionality
+    const navLinks = document.querySelectorAll('.nav-link');
+    const pageContents = document.querySelectorAll('.page-content');
+    const pageTransition = document.querySelector('.page-transition');
+    const hamburger = document.querySelector('.hamburger');
+    const nav = document.querySelector('nav');
+   
+    // Mobile menu toggle
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('active');
+      nav.classList.toggle('active');
+      document.body.classList.toggle('menu-open');
+    });
+   
+    // Close mobile menu when a link is clicked
+    navLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        hamburger.classList.remove('active');
+        nav.classList.remove('active');
+        document.body.classList.remove('menu-open');
+      });
+    });
+   
+    // Page navigation with transition effect
+    navLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+       
+        const targetId = this.getAttribute('href').substring(1);
+       
+        // Don't do anything if already on the active page
+        if (this.classList.contains('active')) return;
+       
+        // Update active nav link
+        navLinks.forEach(navLink => navLink.classList.remove('active'));
+        this.classList.add('active');
+       
+        // Play page transition animation
+        pageTransition.classList.add('active');
+       
+        setTimeout(() => {
+          // Hide all pages
+          pageContents.forEach(page => page.classList.remove('active'));
+         
+          // Show the target page
+          document.getElementById(targetId).classList.add('active');
+         
+          // Scroll to top of the page
+          window.scrollTo(0, 0);
+         
+          // Remove transition animation class after animation completes
+          setTimeout(() => {
+            pageTransition.classList.remove('active');
+          }, 1000);
+        }, 500);
+      });
+    });
+   
+    // Tab functionality
+    function openTab(evt, tabName) {
+      const tabContents = document.getElementsByClassName("tab-content");
+      const tabButtons = document.getElementsByClassName("tab-button");
+     
+      // Hide all tab contents
+      for (let i = 0; i < tabContents.length; i++) {
+        tabContents[i].classList.remove("active");
+      }
+     
+      // Remove active class from all tab buttons
+      for (let i = 0; i < tabButtons.length; i++) {
+        tabButtons[i].classList.remove("active");
+      }
+     
+      // Show the specific tab content
+      document.getElementById(tabName).classList.add("active");
+     
+      // Add active class to the clicked button
+      evt.currentTarget.classList.add("active");
+    }
+   
+    // Modal functionality
+    function openModal(imgSrc, imgAlt) {
+      const modal = document.getElementById("imageModal");
+      const modalImg = document.getElementById("modalImage");
+     
+      modal.style.display = "block";
+      modalImg.src = imgSrc;
+      modalImg.alt = imgAlt;
+     
+      setTimeout(() => {
+        modal.classList.add("show");
+      }, 10);
+    }
+   
+    function closeModal() {
+      const modal = document.getElementById("imageModal");
+      modal.classList.remove("show");
+     
+      setTimeout(() => {
+        modal.style.display = "none";
+      }, 400);
+    }
+   
+    // Close modal when clicking outside the image
+    window.addEventListener('click', (e) => {
+      const modal = document.getElementById("imageModal");
+      if (e.target === modal) {
+        closeModal();
+      }
+    });
+   
+    // Header scroll effect
+    const header = document.querySelector('header');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
+   
+    // Back to top button
+    const backToTopButton = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 300) {
+        backToTopButton.classList.add('show');
+      } else {
+        backToTopButton.classList.remove('show');
+      }
+    });
+   
+    backToTopButton.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+   
+    // Initialize page based on hash or default to home
+    document.addEventListener('DOMContentLoaded', () => {
+      let currentPage = 'home';
+     
+      if (window.location.hash) {
+        currentPage = window.location.hash.substring(1);
+      }
+     
+      // Hide all pages
+      pageContents.forEach(page => page.classList.remove('active'));
+     
+      // Show the current page
+      const targetPage = document.getElementById(currentPage);
+      if (targetPage) {
+        targetPage.classList.add('active');
+      } else {
+        document.getElementById('home').classList.add('active');
+      }
+     
+      // Update active nav link
+      navLinks.forEach(navLink => {
+        navLink.classList.remove('active');
+        if (navLink.getAttribute('href') === `#${currentPage}`) {
+          navLink.classList.add('active');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
+
+
+
