@@ -15,23 +15,49 @@
     }
 
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      scrollbar-width: none;
-    }
+    /* Reset styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
+/* Show scrollbar instead of hiding it */
+html, body {
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgb(252, 215, 53) rgba(252, 215, 53, 0.2);
+}
 
-    *::-webkit-scrollbar {
-      display: none;
-    }
+/* Webkit scrollbar styling (Chrome, Safari, newer Edge) */
+::-webkit-scrollbar {
+  display: block;
+  width: 10px;
+}
 
+::-webkit-scrollbar-track {
+  background: rgba(252, 215, 53, 0.1);
+  border-radius: 10px;
+}
 
-    html, body {
-      overflow-x: hidden;
-      -ms-overflow-style: none;
-    }
+::-webkit-scrollbar-thumb {
+  background: rgb(252, 215, 53);
+  border-radius: 10px;
+  box-shadow: 0 0 5px rgba(252, 215, 53, 0.5);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(252, 215, 53, 0.7);
+  box-shadow: 0 0 8px rgba(252, 215, 53, 0.7);
+}
+
+/* Variables for easy theming */
+:root {
+  --accent: rgb(252, 215, 53);
+  --accent-light: rgba(252, 215, 53, 0.7);
+  --accent-very-light: rgba(252, 215, 53, 0.2);
+  --accent-glow: 0 0 8px rgba(252, 215, 53, 0.7);
+}
 
 
     body {
@@ -1844,6 +1870,3 @@ The leaderboard is waiting.</em></p>
   </script>
 </body>
 </html>
-
-
-
