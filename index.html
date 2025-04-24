@@ -43,19 +43,16 @@
 .top-player.gold {
   background: linear-gradient(to right, #ffd70033, #fff8dc22);
   color: #ffd700;
-  box-shadow: 0 0 10px #ffd70099;
 }
 
 .top-player.silver {
   background: linear-gradient(to right, #c0c0c033, #e0e0e022);
   color: #c0c0c0;
-  box-shadow: 0 0 8px #c0c0c099;
 }
 
 .top-player.bronze {
   background: linear-gradient(to right, #cd7f3233, #ffe4b522);
   color: #cd7f32;
-  box-shadow: 0 0 6px #cd7f3299;
 }
 
 @keyframes popIn {
@@ -1496,6 +1493,29 @@ html, body {
     box-shadow: 0 4px 15px rgba(252, 215, 53, 0.4);
 }
 
+/* Top 3 player hover effect */
+.top-player:hover {
+  transform: scale(1.02);
+  background-blend-mode: lighten;
+  box-shadow: 0 0 15px var(--accent), 0 0 30px rgba(252, 215, 53, 0.3);
+  cursor: url('https://cur.cursors-4u.net/cursors/cur-13/cur1146.cur'), pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.top-player.gold:hover {
+  background: linear-gradient(to right, #ffe600aa, #fff8dc55);
+  box-shadow: 0 0 15px #ffd700aa, 0 0 30px #ffd70055;
+}
+
+.top-player.silver:hover {
+  background: linear-gradient(to right, #c0c0c099, #e0e0e055);
+  box-shadow: 0 0 15px #c0c0c0aa, 0 0 30px #c0c0c055;
+}
+
+.top-player.bronze:hover {
+  background: linear-gradient(to right, #cd7f32aa, #ffe4b566);
+  box-shadow: 0 0 15px #cd7f32aa, 0 0 30px #cd7f3255;
+}
 
   </style>
 </head>
@@ -1963,30 +1983,30 @@ The leaderboard is waiting.</em></p>
             <tbody>
               <tr class="top-player gold">
                 <td>🥇</td>
-                <td>NotTheLord</td>
+                <td>MayhemMaster</td>
                 <td>12,450</td>
               </tr>
               <tr class="top-player silver">
                 <td>🥈</td>
-                <td>L14_Comp</td>
+                <td>DizzyChampion</td>
                 <td>11,285</td>
               </tr>
               <tr class="top-player bronze">
                 <td>🥉</td>
-                <td>Jhg_po</td>
+                <td>ParkourPro</td>
                 <td>10,750</td>
               </tr>
               <tr>
                 <td>4</td>
-                <td>dontjudgemeimsopro</td>
+                <td>JumpKing</td>
                 <td>9,840</td>
               </tr>
               <tr>
                 <td>5</td>
-                <td>jingleCEO</td>
+                <td>LavaRunner</td>
                 <td>8,925</td>
               </tr>
-            </tbody>
+            </tbody>            
           </table>
         </div>
       </section>
