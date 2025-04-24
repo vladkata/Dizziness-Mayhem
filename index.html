@@ -20,9 +20,13 @@
   cursor: none !important;
 }
 
-.leaderboard-table a {
-  color: inherit;
+.leaderboard-table td a {
   text-decoration: none;
+  color: inherit;
+}
+
+.leaderboard-table td a:hover {
+  text-decoration: underline;
 }
 
 .bg-video {
@@ -900,6 +904,11 @@ html, body {
     }
 
 
+    .leaderboard-container p {
+  margin: 0 auto 20px;
+  text-align: center;
+  max-width: 100%; /* optional: override the 90% */
+}
 
 
     .leaderboard-container h4 {
@@ -930,10 +939,6 @@ html, body {
       text-transform: uppercase;
       letter-spacing: 1px;
     }
-
-    .leaderboard-table tr:hover {
-  background-color: rgba(252, 215, 53, 0.05);
-}
 
 .leaderboard-table tbody tr:nth-child(4):hover,
 .leaderboard-table tbody tr:nth-child(5):hover {
@@ -1963,7 +1968,7 @@ The leaderboard is waiting.</em></p>
         <h3>Leaderboard</h3>
         <div class="leaderboard-container">
           <h4>Top Players</h4>
-          <p>Compete with other players for the highest level!</p>
+          <p>Compete with other players for the... 💰 GRAND PRIZE! 💰</p>
          
           <table class="leaderboard-table">
             <thead>
