@@ -2608,7 +2608,9 @@ document.addEventListener('DOMContentLoaded', () => {
   let rafId;
   const idleDelay = 1500;  // ms before auto-scroll
   const scrollSpeed = 10;  // px per frame (≈60px/sec)
-  const wheelMultiplier = 2.5; // How responsive wheel scrolling is
+  
+  // DIRECT WHEEL CONTROL - adjust this value to control scroll speed
+  const WHEEL_SPEED = 3.0; // Higher = faster scrolling (try values between 1-10)
 
   // 1) Clone originals at ends
   slides.forEach(s => track.appendChild(s.cloneNode(true)));
@@ -2671,10 +2673,15 @@ document.addEventListener('DOMContentLoaded', () => {
   track.addEventListener('mouseleave', onMouseUp);
   track.addEventListener('mousemove', onMouseMove);
 
-  // 5) Add mouse wheel scrolling support
+  // 5) SIMPLE DIRECT wheel scrolling
   function onWheel(e) {
     e.preventDefault();
-    track.scrollLeft += e.deltaY * wheelMultiplier;
+    stopAuto();
+    
+    // Simple direct multiplication of wheel movement
+    // Positive deltaY = scroll down = move carousel right
+    track.scrollLeft += e.deltaY * WHEEL_SPEED;
+    
     resetIdle();
   }
 
