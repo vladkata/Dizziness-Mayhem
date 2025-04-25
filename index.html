@@ -2578,6 +2578,90 @@ document.addEventListener('DOMContentLoaded', () => {
     track.scrollLeft = scrollLeft - walk;
   });
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+  const track   = document.querySelector('.tape-track');
+  const slides  = Array.from(track.children);
+  const gap     = 20; // must match your CSS gap
+
+  // ── 1) Clone slides for infinite wrap ──
+  slides.forEach(s => track.appendChild(s.cloneNode(true)));
+  slides.forEach(s => track.insertBefore(s.cloneNode(true), track.firstChild));
+
+  // ── 2) Measure one set width ──
+  const setWidth = slides[0].getBoundingClientRect().width + gap;
+
+  // ── 3) Jump to the “middle” ──
+  track.scrollLeft = slides.length * setWidth;
+
+  // ── 4) On manual scroll, wrap if at ends ──
+  track.addEventListener('scroll', () => {
+    if (track.scrollLeft <= 0) {
+      track.scrollLeft += slides.length * setWidth;
+    } else if (track.scrollLeft >= track.scrollWidth - track.clientWidth) {
+      track.scrollLeft -= slides.length * setWidth;
+    }
+  });
+
+  // ── 5) Drag‐to‐scroll ──
+  let isDown = false, startX, startScroll;
+  track.addEventListener('mousedown', e => {
+    isDown = true;
+    track.classList.add('active');
+    startX = e.pageX - track.offsetLeft;
+    startScroll = track.scrollLeft;
+  });
+  ['mouseup','mouseleave'].forEach(ev =>
+    track.addEventListener(ev, () => {
+      isDown = false;
+      track.classList.remove('active');
+    })
+  );
+  track.addEventListener('mousemove', e => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x    = e.pageX - track.offsetLeft;
+    const walk = (x - startX) * 2;
+    track.scrollLeft = startScroll - walk;
+  });
+
+  // ── Idle Auto‐Scroll ──
+  let idleTimer, rafId;
+  const idleDelay   = 3000; // ms
+  const scrollSpeed = 10;    // px per frame
+
+  function startAuto() {
+    if (rafId) return;
+    function step() {
+      track.scrollLeft += scrollSpeed;
+      rafId = requestAnimationFrame(step);
+    }
+    step();
+  }
+
+  function stopAuto() {
+    if (!rafId) return;
+    cancelAnimationFrame(rafId);
+    rafId = null;
+  }
+
+  function resetIdle() {
+    stopAuto();
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(startAuto, idleDelay);
+  }
+
+  // Reset on any user interaction
+  ['mousedown','wheel','touchstart','touchmove','mousemove'].forEach(evt =>
+    track.addEventListener(evt, resetIdle, { passive: true })
+  );
+  ['mouseup','mouseleave'].forEach(evt =>
+    track.addEventListener(evt, resetIdle)
+  );
+
+  // Kick it off
+  resetIdle();
+});
   
 </script>
 </body>
