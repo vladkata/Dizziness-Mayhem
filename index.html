@@ -55,18 +55,22 @@
 .tape-track {
   display: flex;
   gap: 20px;
+  /* scroll horizontally, but allow vertical overflow */
   overflow-x: auto;
+  overflow-y: visible;
   scroll-behavior: smooth;
-  padding-bottom: 10px;
+  /* add padding top+bottom so box-shadow has space */
+  padding-top: 20px;
+  padding-bottom: 20px;
   scrollbar-width: none; /* Firefox */
-  justify-content: center;
+  /* optional UX polish */
   -webkit-overflow-scrolling: touch;
   cursor: grab;
 }
-
 .tape-track:active {
   cursor: grabbing;
 }
+
 
 .tape-track::-webkit-scrollbar {
   display: none; /* Chrome, Safari */
@@ -2527,6 +2531,53 @@ The leaderboard is waiting.</em></p>
       tapeSection.classList.add('show');
     }
   });
+
+  // ── Infinite‐loop carousel & drag‐to‐scroll ──
+document.addEventListener('DOMContentLoaded', () => {
+  const track = document.querySelector('.tape-track');
+  const slides = Array.from(track.children);
+
+  // 1) Clone slides at both ends:
+  slides.forEach(s => track.appendChild(s.cloneNode(true)));
+  slides.forEach(s => track.insertBefore(s.cloneNode(true), track.firstChild));
+
+  // 2) Compute one “set” width (one original-set of slides):
+  const slideWidth = slides[0].getBoundingClientRect().width + 20; // + gap
+
+  // 3) Jump scroll to the *middle* (start of real originals):
+  track.scrollLeft = slides.length * slideWidth;
+
+  // 4) On scroll, if we hit either end, jump back by one set:
+  track.addEventListener('scroll', () => {
+    if (track.scrollLeft <= 0) {
+      track.scrollLeft += slides.length * slideWidth;
+    } else if (track.scrollLeft >= track.scrollWidth - track.clientWidth) {
+      track.scrollLeft -= slides.length * slideWidth;
+    }
+  });
+
+  // 5) Mouse drag → scroll:
+  let isDown = false, startX, scrollLeft;
+  track.addEventListener('mousedown', e => {
+    isDown = true;
+    track.classList.add('active');
+    startX = e.pageX - track.offsetLeft;
+    scrollLeft = track.scrollLeft;
+  });
+  ['mouseup','mouseleave'].forEach(ev =>
+    track.addEventListener(ev, () => {
+      isDown = false;
+      track.classList.remove('active');
+    })
+  );
+  track.addEventListener('mousemove', e => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - track.offsetLeft;
+    const walk = (x - startX) * 2;  // tweak scroll‐speed multiplier here
+    track.scrollLeft = scrollLeft - walk;
+  });
+});
   
 </script>
 </body>
