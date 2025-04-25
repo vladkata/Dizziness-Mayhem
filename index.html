@@ -20,6 +20,86 @@
   cursor: none !important;
 }
 
+.youtube-container {
+  margin: 40px auto 100px; /* top auto bottom */
+  max-width: 960px;
+  width: 90%;
+  aspect-ratio: 16 / 9;
+  box-shadow: 0 8px 25px rgba(252, 215, 53, 0.3);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+
+.youtube-container iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.screenshot-tape {
+  max-width: 1200px;
+  margin: 80px auto;
+  padding: 0 20px;
+  text-align: center;
+}
+
+.screenshot-tape h3 {
+  font-size: 2rem;
+  color: var(--accent);
+  margin-bottom: 20px;
+  text-shadow: 0 0 10px rgba(252, 215, 53, 0.3);
+  font-weight: 600;
+}
+
+.tape-track {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding-bottom: 10px;
+  scrollbar-width: none; /* Firefox */
+  justify-content: center;
+  -webkit-overflow-scrolling: touch;
+  cursor: grab;
+}
+
+.tape-track:active {
+  cursor: grabbing;
+}
+
+.tape-track::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+
+.tape-shot {
+  flex: 0 0 auto;
+  width: 300px;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(252, 215, 53, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.tape-shot:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 25px rgba(252, 215, 53, 0.5);
+}
+
+.screenshot-tape {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s ease;
+}
+
+.screenshot-tape.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+
 .leaderboard-table td a {
   text-decoration: none;
   color: inherit;
@@ -1576,6 +1656,30 @@ html, body {
       </section>
     </div>
 
+    <!-- Embedded YouTube Video -->
+<div class="youtube-container">
+  <iframe
+    src="https://www.youtube.com/embed/ZlZOdCGG5oQ"
+    title="Gameplay Trailer"
+    frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+    allowfullscreen
+  ></iframe>
+</div>
+
+
+<!-- Scrollable Screenshot Tape -->
+<div class="screenshot-tape">
+  <h3>Gallery Preview</h3>
+  <div class="tape-track">
+    <img src="snmki2/image1.jpg" alt="Screenshot 1" class="tape-shot">
+    <img src="snmki2/image2.jpg" alt="Screenshot 2" class="tape-shot">
+    <img src="snmki2/image3.jpg" alt="Screenshot 3" class="tape-shot">
+    <img src="snmki2/image4.jpg" alt="Screenshot 4" class="tape-shot">
+    <img src="snmki2/image5.jpg" alt="Screenshot 5" class="tape-shot">
+    <!-- Add more images as needed -->
+  </div>
+</div>
 
 
 
@@ -2414,6 +2518,16 @@ The leaderboard is waiting.</em></p>
       }
     }, duration);
   }
+
+  const tapeSection = document.querySelector('.screenshot-tape');
+  window.addEventListener('scroll', () => {
+    const trigger = window.innerHeight * 0.85;
+    const tapeTop = tapeSection.getBoundingClientRect().top;
+    if (tapeTop < trigger) {
+      tapeSection.classList.add('show');
+    }
+  });
+  
 </script>
 </body>
 </html>
