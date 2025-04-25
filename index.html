@@ -77,12 +77,14 @@
 /* Custom cursor container */
 #custom-cursor {
   position: fixed;
-  width: 40px; /* Adjust based on your image size */
-  height: 50px; /* Adjust based on your image size */
+  width: 40px;
+  height: 50px;
   pointer-events: none;
   z-index: 9999;
   transform: translate(-50%, -50%);
   transition: transform 0.05s ease;
+  will-change: transform;
+/*max-right: calc(100vw - 15px); /* Prevent going into the scrollbar */
 }
 
 
@@ -2324,8 +2326,11 @@ The leaderboard is waiting.</em></p>
   // Track mouse movement
   document.addEventListener('mousemove', (e) => {
     // Update cursor position
-    cursor.style.left = e.clientX + 'px';
-    cursor.style.top = e.clientY + 'px';
+    const maxX = window.innerWidth - 15; // Avoid hitting scrollbar
+const clampedX = Math.min(e.clientX, maxX);
+cursor.style.left = clampedX + 'px';
+cursor.style.top = e.clientY + 'px';
+
    
     // Calculate velocity
     const velX = Math.abs(e.clientX - lastX);
