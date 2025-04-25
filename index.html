@@ -2582,38 +2582,34 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('DOMContentLoaded', () => {
   const track    = document.querySelector('.tape-track');
   const slides   = Array.from(track.children);
-  const gap      = 20;                         // your CSS gap
+  const gap      = 20;
   const setWidth = slides[0].getBoundingClientRect().width + gap;
   const total    = slides.length;
   const maxScroll= track.scrollWidth - track.clientWidth;
 
-  // 1) Clone originals at ends
+  // Clone slides
   slides.forEach(s => track.appendChild(s.cloneNode(true)));
   slides.forEach(s => track.insertBefore(s.cloneNode(true), track.firstChild));
 
-  // 2) Jump to middle
+  // Jump to middle
   track.scrollLeft = total * setWidth;
 
-  // 3) Improved infinite wrap
+  // Infinite wrap
   let wrapping = false;
   track.addEventListener('scroll', () => {
     if (wrapping) return;
-
-    // if scrolled TOO FAR left
     if (track.scrollLeft < setWidth) {
       wrapping = true;
       track.scrollLeft += total * setWidth;
       requestAnimationFrame(() => wrapping = false);
-    }
-    // if scrolled TOO FAR right
-    else if (track.scrollLeft > maxScroll - setWidth) {
+    } else if (track.scrollLeft > maxScroll - setWidth) {
       wrapping = true;
       track.scrollLeft -= total * setWidth;
       requestAnimationFrame(() => wrapping = false);
     }
   });
 
-  // 4) Drag-to-scroll
+  // Drag-to-scroll
   let isDown = false, startX = 0, startScroll = 0;
   track.addEventListener('mousedown', e => {
     isDown = true;
@@ -2630,15 +2626,15 @@ document.addEventListener('DOMContentLoaded', () => {
   track.addEventListener('mousemove', e => {
     if (!isDown) return;
     e.preventDefault();
-    const x    = e.pageX - track.offsetLeft;
+    const x = e.pageX - track.offsetLeft;
     const walk = (x - startX) * 2;
     track.scrollLeft = startScroll - walk;
   });
 
-  // 5) Idle Auto-Scroll
+  // Idle auto-scroll
   let idleTimer, rafId;
-  const idleDelay   = 1500;  // ms before auto-scroll
-  const scrollSpeed = 10;     // px per frame (≈60px/sec)
+  const idleDelay   = 1500;
+  const scrollSpeed = 10;
 
   function startAuto() {
     if (rafId) return;
@@ -2647,18 +2643,19 @@ document.addEventListener('DOMContentLoaded', () => {
       rafId = requestAnimationFrame(step);
     })();
   }
+
   function stopAuto() {
     if (!rafId) return;
     cancelAnimationFrame(rafId);
     rafId = null;
   }
+
   function resetIdle() {
     stopAuto();
     clearTimeout(idleTimer);
     idleTimer = setTimeout(startAuto, idleDelay);
   }
 
-  // reset on any interaction
   ['mousedown','wheel','touchstart','touchmove','mousemove'].forEach(evt =>
     track.addEventListener(evt, resetIdle, { passive: true })
   );
@@ -2666,22 +2663,17 @@ document.addEventListener('DOMContentLoaded', () => {
     track.addEventListener(evt, resetIdle)
   );
 
-  // kick it off
   resetIdle();
-});
 
-// — Pause auto-scroll when the tab loses focus —
-document.addEventListener('visibilitychange', () => {
-  if (document.hidden) {
-    stopAuto(); // stop scrolling while tab is inactive
-  } else {
-    resetIdle(); // reset when tab becomes active again
-  }
-});
+  // — Now correctly inside the same scope —
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) stopAuto();
+    else resetIdle();
+  });
 
-// Also pause on window blur (e.g. switching tabs/app)
-window.addEventListener('blur', stopAuto);
-window.addEventListener('focus', resetIdle);
+  window.addEventListener('blur', stopAuto);
+  window.addEventListener('focus', resetIdle);
+});
   
 </script>
 </body>
