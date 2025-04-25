@@ -1676,11 +1676,11 @@ html, body {
 <div class="screenshot-tape">
   <h3>Gallery Preview</h3>
   <div class="tape-track">
-    <img src="snmki2/image1.jpg" alt="Screenshot 1" class="tape-shot">
-    <img src="snmki2/image2.jpg" alt="Screenshot 2" class="tape-shot">
-    <img src="snmki2/image3.jpg" alt="Screenshot 3" class="tape-shot">
-    <img src="snmki2/image4.jpg" alt="Screenshot 4" class="tape-shot">
-    <img src="snmki2/image5.jpg" alt="Screenshot 5" class="tape-shot">
+    <img src="snmki2/Ekranna_snimka_(9).jpg" alt="Screenshot 1" class="tape-shot">
+    <img src="snmki2/Ekranna_snimka_(8).jpg" alt="Screenshot 2" class="tape-shot">
+    <img src="snmki2/Ekranna_snimka_(7).jpg" alt="Screenshot 3" class="tape-shot">
+    <img src="snmki2/Ekranna_snimka_(5).jpg" alt="Screenshot 4" class="tape-shot">
+    <img src="snmki2/Ekranna_snimka_(2).jpg" alt="Screenshot 5" class="tape-shot">
     <!-- Add more images as needed -->
   </div>
 </div>
@@ -2574,123 +2574,93 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!isDown) return;
     e.preventDefault();
     const x = e.pageX - track.offsetLeft;
-    track.scrollLeft = scrollLeft - walk;
     const walk = (x - startX) * 2;  // tweak scroll‐speed multiplier here
+    track.scrollLeft = scrollLeft - walk;
   });
 });
 
-window.addEventListener('load', () => {
-  const track = document.querySelector('.tape-track');
-  const gap = 20;
+document.addEventListener('DOMContentLoaded', () => {
+  const track   = document.querySelector('.tape-track');
+  const slides  = Array.from(track.children);
+  const gap     = 20; // must match your CSS gap
 
-  // Wait for all images in the track to fully load
-  const images = track.querySelectorAll('img');
-  const allImagesLoaded = Array.from(images).every(img => img.complete);
+  // ── 1) Clone slides for infinite wrap ──
+  slides.forEach(s => track.appendChild(s.cloneNode(true)));
+  slides.forEach(s => track.insertBefore(s.cloneNode(true), track.firstChild));
 
-  if (!allImagesLoaded) {
-    Promise.all(
-      Array.from(images).map(img =>
-        new Promise(resolve => {
-          if (img.complete) return resolve();
-          img.onload = img.onerror = resolve;
-        })
-      )
-    ).then(() => {
-      initializeCarousel(track, gap);
-    });
-  } else {
-    initializeCarousel(track, gap);
+  // ── 2) Measure one set width ──
+  const setWidth = slides[0].getBoundingClientRect().width + gap;
+
+  // ── 3) Jump to the “middle” ──
+  track.scrollLeft = slides.length * setWidth;
+
+  // ── 4) On manual scroll, wrap if at ends ──
+  track.addEventListener('scroll', () => {
+    if (track.scrollLeft <= 0) {
+      track.scrollLeft += slides.length * setWidth;
+    } else if (track.scrollLeft >= track.scrollWidth - track.clientWidth) {
+      track.scrollLeft -= slides.length * setWidth;
+    }
+  });
+
+  // ── 5) Drag‐to‐scroll ──
+  let isDown = false, startX, startScroll;
+  track.addEventListener('mousedown', e => {
+    isDown = true;
+    track.classList.add('active');
+    startX = e.pageX - track.offsetLeft;
+    startScroll = track.scrollLeft;
+  });
+  ['mouseup','mouseleave'].forEach(ev =>
+    track.addEventListener(ev, () => {
+      isDown = false;
+      track.classList.remove('active');
+    })
+  );
+  track.addEventListener('mousemove', e => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x    = e.pageX - track.offsetLeft;
+    const walk = (x - startX) * 2;
+    track.scrollLeft = startScroll - walk;
+  });
+
+  // ── Idle Auto‐Scroll ──
+  let idleTimer, rafId;
+  const idleDelay   = 3000; // ms
+  const scrollSpeed = 10;    // px per frame
+
+  function startAuto() {
+    if (rafId) return;
+    function step() {
+      track.scrollLeft += scrollSpeed;
+      rafId = requestAnimationFrame(step);
+    }
+    step();
   }
 
-  function initializeCarousel(track, gap) {
-    const slides = Array.from(track.children);
-    const slideWidth = slides[0].getBoundingClientRect().width + gap;
-    const total = slides.length;
-
-    // Clone original slides on both ends
-    slides.forEach(s => track.appendChild(s.cloneNode(true)));
-    slides.forEach(s => track.insertBefore(s.cloneNode(true), track.firstChild));
-
-    const setWidth = slideWidth;
-    const maxScroll = track.scrollWidth - track.clientWidth;
-
-    // Delay scroll jump so layout is 100% accurate
-    setTimeout(() => {
-      track.scrollLeft = total * setWidth;
-    }, 0);
-
-    // Wrapping logic with buffer
-    let wrapping = false;
-    track.addEventListener('scroll', () => {
-      if (wrapping) return;
-
-      if (track.scrollLeft < setWidth) {
-        wrapping = true;
-        track.scrollLeft += total * setWidth;
-        requestAnimationFrame(() => (wrapping = false));
-      } else if (track.scrollLeft > maxScroll - setWidth) {
-        wrapping = true;
-        track.scrollLeft -= total * setWidth;
-        requestAnimationFrame(() => (wrapping = false));
-      }
-    });
-
-    // Drag-to-scroll
-    let isDown = false,
-      startX = 0,
-      startScroll = 0;
-    track.addEventListener('mousedown', e => {
-      isDown = true;
-      track.classList.add('active');
-      startX = e.pageX - track.offsetLeft;
-      startScroll = track.scrollLeft;
-    });
-    ['mouseup', 'mouseleave'].forEach(ev =>
-      track.addEventListener(ev, () => {
-        isDown = false;
-        track.classList.remove('active');
-      })
-    );
-    track.addEventListener('mousemove', e => {
-      if (!isDown) return;
-      e.preventDefault();
-      const x = e.pageX - track.offsetLeft;
-      const walk = (x - startX) * 2;
-      track.scrollLeft = startScroll - walk;
-    });
-
-    // Idle Auto-scroll
-    let idleTimer, rafId;
-    const idleDelay = 1500;
-    const scrollSpeed = 10;
-
-    function startAuto() {
-      if (rafId) return;
-      function step() {
-        track.scrollLeft += scrollSpeed;
-        rafId = requestAnimationFrame(step);
-      }
-      step();
-    }
-
-    function stopAuto() {
-      if (!rafId) return;
-      cancelAnimationFrame(rafId);
-      rafId = null;
-    }
-
-    function resetIdle() {
-      stopAuto();
-      clearTimeout(idleTimer);
-      idleTimer = setTimeout(startAuto, idleDelay);
-    }
-
-    ['mousedown', 'wheel', 'touchstart', 'touchmove', 'mousemove'].forEach(evt =>
-      track.addEventListener(evt, resetIdle, { passive: true })
-    );
-    ['mouseup', 'mouseleave'].forEach(evt => track.addEventListener(evt, resetIdle));
-    resetIdle();
+  function stopAuto() {
+    if (!rafId) return;
+    cancelAnimationFrame(rafId);
+    rafId = null;
   }
+
+  function resetIdle() {
+    stopAuto();
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(startAuto, idleDelay);
+  }
+
+  // Reset on any user interaction
+  ['mousedown','wheel','touchstart','touchmove','mousemove'].forEach(evt =>
+    track.addEventListener(evt, resetIdle, { passive: true })
+  );
+  ['mouseup','mouseleave'].forEach(evt =>
+    track.addEventListener(evt, resetIdle)
+  );
+
+  // Kick it off
+  resetIdle();
 });
   
 </script>
